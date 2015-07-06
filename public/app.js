@@ -33,6 +33,7 @@ var app = new Vue({
       .then(function(output){
         return output.json();
       }).then(function(message){
+	console.log(message.subscribe_key);
         return message.subscribe_key;
       }).then(function(key){
           pn = PUBNUB.init({
