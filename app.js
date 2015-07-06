@@ -40,8 +40,13 @@ r.init(config.database, [
 .then(function(changes) {
   changes.each(function(err, item) {
     console.log("Received:", item);
-    pn.publish({channel: "updates", message: item,
-    error: function(err) { console.log("Failure:" , err); }});
+    pn.publish(
+      {
+        channel: "updates",
+        message: item,
+        error: function(err) { console.log("Failure:" , err)},
+        callback: function(m) { console.log(m)}
+      });
   });
 });
 
@@ -70,6 +75,10 @@ app.post("/api/user/create", authHandler(auth.create));
 app.post("/api/user/login", authHandler(auth.login));
 
 app.use(jwt({secret: config.jwt.secret, credentialsRequired: false}));
+
+app.get("/api/config", function(req, res){
+  return res.json({subscribe_key: config.pubnub.subscribe_key});
+})
 
 app.post("/api/send", function(req, res) {
   if (!req.user.admin)

@@ -1,0 +1,16 @@
+app:
+  build: .
+  links:
+   - rethinkdb
+  ports:
+   - "3001:8091"
+  environment:
+   - VIRTUAL_HOST=rethink-liveblog.dalanmiller.com
+
+rethinkdb:
+  image: rethinkdb
+  ports:
+   - "10001:8080"
+   - "10002:28015"
+   - "10003:29015"
+ 

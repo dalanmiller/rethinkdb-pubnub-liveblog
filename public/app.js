@@ -28,19 +28,27 @@ var app = new Vue({
 
       window.sessionStorage.setItem("user", JSON.stringify(response.user));
       window.sessionStorage.setItem("token", response.token);
-
-      var pn = PUBNUB.init({
-        subscribe_key: "sub-c-751bd564-f6c1-11e4-b945-0619f8945a4f",
-        auth_key: response.token
-      });
-
       var that = this;
-      pn.subscribe({
-        channel: "updates",
-        message: function(message, env, channel) {
-          console.log("Message:", message);
-          that.messages.unshift(message);
-        }
+      fetch("/api/config", {})
+      .then(function(output){
+        return output.json();
+      }).then(function(message){
+        return message.subscribe_key;
+      }).then(function(key){
+          pn = PUBNUB.init({
+            //subscribe_key: "sub-c-505fc60e-20fb-11e5-84a1-02ee2ddab7fe",
+            subscribe_key: key,
+            auth_key: response.token
+          });
+      }).then(function(){
+        pn.subscribe({
+          channel: "updates",
+          message: function(message, env, channel) {
+            console.log("Message:", message);
+            that.messages.unshift(message);
+          },
+          error: function(error) { console.log(JSON.stringify(error)); }
+        });
       });
 
       fetch("/api/history", {
